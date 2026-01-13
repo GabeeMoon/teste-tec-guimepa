@@ -1,5 +1,3 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
-
 # version: '3.8'
 
 services:
@@ -51,7 +49,7 @@ WORKDIR /var/www/html/public
 
 EXPOSE 80
 
-```md
+
 # Projeto CRUD PHP - Teste Técnico
 
 Aplicação CRUD para gestão de postagens com PHP puro, MySQL 8.0, Docker e Docker Compose.
@@ -78,23 +76,18 @@ Aplicação CRUD para gestão de postagens com PHP puro, MySQL 8.0, Docker e Doc
 
 ### 1) Clonar o repositório
 
-```bash
 git clone https://github.com/GabeeMoon/teste-tec-guimepa.git
 cd teste-tec-guimepa
-```
-
 
 ### 2) Subir os containers
 
-```bash
 docker compose up -d --build
-```
 
 Ou se usar `docker-compose` legado:
 
-```bash
+
 docker-compose up -d --build
-```
+
 
 
 ### 3) Aguardar inicialização do MySQL
@@ -107,16 +100,14 @@ Aguarde cerca de 10-15 segundos para o MySQL ficar pronto.
 
 Abra o navegador em:
 
-```
 http://localhost:8000
-```
 
 
 ---
 
 ## Estrutura do projeto
 
-```
+
 teste-tec-guimepa/
 ├── app/                   # Código da aplicação (controllers, models, views)
 ├── public/                # Pasta pública (index.php, assets)
@@ -124,7 +115,6 @@ teste-tec-guimepa/
 ├── docker-compose.yml     # Orquestração dos containers
 ├── Dockerfile             # Imagem PHP customizada
 └── README.md              # Este arquivo
-```
 
 
 ---
@@ -141,7 +131,6 @@ Para conectar sua aplicação PHP ao MySQL, use:
 
 **Exemplo de conexão PDO (PHP):**
 
-```php
 <?php
 $host = 'db';
 $dbname = 'crudphp';
@@ -155,8 +144,6 @@ try {
     die("Erro na conexão: " . $e->getMessage());
 }
 ?>
-```
-
 
 ---
 
@@ -164,30 +151,22 @@ try {
 
 ### Ver logs dos containers
 
-```bash
+
 docker compose logs -f
-```
 
 
 ### Parar os containers (mantém dados)
 
-```bash
 docker compose down
-```
-
 
 ### Parar e remover volumes (reset total do banco)
 
-```bash
 docker compose down -v
-```
 
 
 ### Reconstruir após alterações no Dockerfile
 
-```bash
 docker compose up -d --build
-```
 
 
 ### Acessar o container da aplicação PHP
