@@ -1,265 +1,166 @@
-# version: '3.8'
+# 🐳 Projeto CRUD PHP - Docker Environment
 
-services:
-  app:
-    build: .
-    ports:
-      - "8000:80"
-    volumes:
-      - ./:/var/www/html
-    depends_on:
-      - db
-
-db:
-    image: mysql:8.0
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: crudphp
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-    ports:
-      - "3306:3306"
-    volumes:
-      - dbdata:/var/lib/mysql
-      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
-
-volumes:
-  dbdata:
-
-DOCKERFILE
-FROM php:8.0-apache
-
-RUN docker-php-ext-install pdo pdo_mysql
-
-# Copia todo o código para /var/www/html
-
-COPY ./app /var/www/html/app
-COPY ./public /var/www/html/public
-
-# Configura o DocumentRoot para a pasta public
-
-RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
-
-# Ativa rewrite e restart apache
-
-RUN a2enmod rewrite
-
-WORKDIR /var/www/html/public
-
-EXPOSE 80
-
-
-# Projeto CRUD PHP - Teste Técnico
-
-Aplicação CRUD para gestão de postagens com PHP puro, MySQL 8.0, Docker e Docker Compose.
+Aplicação CRUD desenvolvida com **PHP 8.0**, **MySQL 8.0** e **Apache**, totalmente dockerizada para facilitar o desenvolvimento e deploy.
 
 ---
 
-## Tecnologias
+## 🚀 Tecnologias Utilizadas
 
-- PHP 8.0
-- MySQL 8.0
-- Apache
-- Docker + Docker Compose
-
----
-
-## Requisitos
-
-- Docker instalado
-- Docker Compose instalado (ou plugin `docker compose`)
+- **PHP 8.0** (Imagem oficial com Apache)
+- **MySQL 8.0**
+- **Docker** & **Docker Compose**
+- **PDO** (Conexão segura com banco de dados)
+- **Apache Mod Rewrite** (Ativado para rotas amigáveis)
 
 ---
 
-## Como executar
+## 📋 Pré-requisitos
 
-### 1) Clonar o repositório
+Para rodar este projeto, você precisa ter instalado:
 
-git clone https://github.com/GabeeMoon/teste-tec-guimepa.git
+- [Docker Engine](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+
+---
+
+## 🔧 Como Executar o Projeto
+
+Siga os passos abaixo para subir o ambiente de desenvolvimento:
+
+### 1. Clonar o repositório
+
+```bash
+git clone [https://github.com/GabeeMoon/teste-tec-guimepa.git](https://github.com/GabeeMoon/teste-tec-guimepa.git)
 cd teste-tec-guimepa
+```
 
-### 2) Subir os containers
+### 2. Subir os containers
 
+Este comando irá baixar as imagens, construir o Dockerfile e iniciar os serviços:
+
+```bash
 docker compose up -d --build
+```
 
-Ou se usar `docker-compose` legado:
+### 3. Aguardar o Banco de Dados
 
+> **Nota:** Na primeira execução, o MySQL pode levar de 15 a 30 segundos para inicializar e importar o arquivo `database.sql`.
 
-docker-compose up -d --build
+### 4. Acessar a aplicação
 
+Abra seu navegador e acesse:
 
-
-### 3) Aguardar inicialização do MySQL
-
-O banco de dados será criado automaticamente. O arquivo `database.sql` é executado na primeira inicialização do container MySQL.
-
-Aguarde cerca de 10-15 segundos para o MySQL ficar pronto.
-
-### 4) Acessar a aplicação
-
-Abra o navegador em:
-
-http://localhost:8000
-
+**[http://localhost:8000](http://localhost:8000)**
 
 ---
 
-## Estrutura do projeto
+## 🛢️ Configuração do Banco de Dados
 
+Para conectar o PHP ao MySQL dentro do ambiente Docker, utilize as seguintes credenciais (já configuradas no `docker-compose.yml`):
 
-teste-tec-guimepa/
-├── app/                   # Código da aplicação (controllers, models, views)
-├── public/                # Pasta pública (index.php, assets)
-├── database.sql           # Script SQL (executado automaticamente)
-├── docker-compose.yml     # Orquestração dos containers
-├── Dockerfile             # Imagem PHP customizada
-└── README.md              # Este arquivo
+| Parâmetro | Valor |
+| :--- | :--- |
+| **Host** | `db` |
+| **Database** | `crudphp` |
+| **Usuário** | `user` |
+| **Senha** | `password` |
+| **Porta Interna** | `3306` |
 
+### Exemplo de Conexão PDO (PHP)
 
----
-
-## Credenciais do banco de dados
-
-Para conectar sua aplicação PHP ao MySQL, use:
-
-- **Host:** `db`
-- **Database:** `crudphp`
-- **Usuário:** `user`
-- **Senha:** `password`
-- **Porta interna:** `3306`
-
-**Exemplo de conexão PDO (PHP):**
-
-<?php
-$host = 'db';
-$dbname = 'crudphp';
+```php
+$host = 'db'; // O nome do serviço no docker-compose é o host
+$db   = 'crudphp';
 $user = 'user';
 $pass = 'password';
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Erro na conexão: " . $e->getMessage());
+     $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+     throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
-?>
+```
 
 ---
 
-## Comandos úteis
+## 📂 Estrutura de Arquivos
 
-### Ver logs dos containers
+```text
+.
+├── app/                  # Lógica da aplicação (Controllers, Models)
+├── public/               # Document Root (index.php, css, js, images)
+├── database.sql          # Script de inicialização do banco
+├── docker-compose.yml    # Orquestração dos serviços
+├── Dockerfile            # Configuração da imagem PHP
+└── README.md             # Documentação do projeto
+```
 
+> **Atenção:** O `Dockerfile` está configurado para usar a pasta `/public` como DocumentRoot do Apache. Certifique-se de que seu `index.php` esteja dentro de `./public`.
 
+---
+
+## 🛠️ Comandos Úteis
+
+**Ver logs em tempo real:**
+```bash
 docker compose logs -f
+```
 
-
-### Parar os containers (mantém dados)
-
+**Parar os containers:**
+```bash
 docker compose down
+```
 
-### Parar e remover volumes (reset total do banco)
-
-docker compose down -v
-
-
-### Reconstruir após alterações no Dockerfile
-
-docker compose up -d --build
-
-
-### Acessar o container da aplicação PHP
-
+**Acessar o terminal do container PHP:**
 ```bash
 docker compose exec app bash
 ```
 
-
-### Acessar o MySQL via terminal
-
+**Acessar o MySQL via terminal:**
 ```bash
 docker compose exec db mysql -uuser -ppassword crudphp
 ```
 
-Ou como root:
-
-```bash
-docker compose exec db mysql -uroot -prootpassword crudphp
-```
-
-
 ---
 
-## Solução de problemas
+## ⚠️ Solução de Problemas
 
-### Porta 8000 já está em uso
-
-Edite `docker-compose.yml` e altere a porta:
-
+### Porta 8000 em uso
+Se a porta 8000 estiver ocupada, altere no arquivo `docker-compose.yml`:
 ```yaml
 ports:
-  - "8001:80"  # Mude 8000 para outra porta disponível
+  - "8080:80" # Mapeia a porta 8080 do host para a 80 do container
 ```
 
-Depois recrie:
-
-```bash
-docker compose down
-docker compose up -d --build
-```
-
-
-### Porta 3306 já está em uso (MySQL local rodando)
-
-Se você tem MySQL instalado localmente, altere a porta publicada:
-
-```yaml
-ports:
-  - "3307:3306"  # Mude 3306 para 3307
-```
-
-
-### Erro de conexão com banco de dados
-
-Verifique se os containers estão rodando:
-
+### Erro de Conexão com o Banco
+Se receber erro de conexão, verifique se o container do banco está saudável:
 ```bash
 docker compose ps
 ```
-
-Aguarde alguns segundos para o MySQL inicializar completamente. Verifique os logs:
-
-```bash
-docker compose logs db
-```
-
-
-### Banco de dados não foi criado automaticamente
-
-Se o volume já existia de uma execução anterior, o script `database.sql` não executa novamente. Para forçar reset:
-
+Se precisar resetar o banco de dados completamente (apagar dados e recriar):
 ```bash
 docker compose down -v
 docker compose up -d --build
 ```
 
+---
+
+## 👤 Autor
+
+**Gabriel Moon**
+
+- Github: [@GabeeMoon](https://github.com/GabeeMoon)
 
 ---
 
-## Autor
+## 📄 Licença
 
-**Gabriel Moon** - [GabeeMoon](https://github.com/GabeeMoon)
-
----
-
-## Licença
-
-Este projeto foi desenvolvido como teste técnico.
-
-```
-
-***
-
-**PRONTO PARA USO**. Copie todo o conteúdo acima e substitua o README.md atual do repositório.```
-
+Este projeto é de código aberto.
