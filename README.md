@@ -1,4 +1,3 @@
-```markdown
 # 📝 Projeto CRUD PHP - Teste Técnico
 
 Sistema de gerenciamento de postagens (CRUD) desenvolvido com **PHP 8.0**, **MySQL 8.0** e **Apache**, containerizado com **Docker**.
@@ -30,42 +29,44 @@ Aplicação web que permite:
 
 Antes de começar, certifique-se de ter instalado:
 
-- ✅ [Docker Desktop](https://www.docker.com/products/docker-desktop/) (versão 20.10+)
-- ✅ [Git](https://git-scm.com/downloads)
+- ✅ Docker Desktop (versão 20.10+)
+- ✅ Git
 - ✅ Terminal/Prompt de comando
 
-**Verifique a instalação:**
+Verifique a instalação:
 ```bash
 docker --version
 docker compose version
 git --version
 ```
 
+---
+
 ## 🚀 Como executar o projeto
 
-### Passo 1: Clone o repositório
+### Passo 1: Clonar o repositório
 
 ```bash
 git clone https://github.com/GabeeMoon/teste-tec-guimepa.git
 cd teste-tec-guimepa
 ```
 
-### Passo 2: Inicie o Docker Desktop
+### Passo 2: Iniciar o Docker Desktop
 
-- Abra o **Docker Desktop** no Windows
-- Aguarde até o ícone da baleia ficar estável no system tray
+- Abra o Docker Desktop no Windows
+- Aguarde até o ícone da baleia ficar estável
 - Confirme que está rodando: `docker ps`
 
-### Passo 3: Configure as credenciais do banco
+### Passo 3: Verificar configuração do banco
 
-⚠️ **IMPORTANTE:** Antes de subir os containers, verifique se o arquivo `app/config/database.php` está correto:
+Arquivo: `app/config/database.php`
 
 ```php
 <?php
-$host = 'db';           // ✅ Nome do service no docker-compose
-$dbname = 'crudphp';    // ✅ Nome do banco
-$user = 'user';         // ✅ Usuário do MySQL
-$pass = 'password';     // ✅ Senha do MySQL (deve ser 'password', não 'userpassword')
+$host = 'db';
+$dbname = 'crudphp';
+$user = 'user';
+$pass = 'password';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $pass);
@@ -75,51 +76,40 @@ try {
 }
 ```
 
-### Passo 4: Suba os containers
+### Passo 4: Subir os containers
 
 ```bash
 docker compose up -d --build
 ```
 
 Isso irá:
-- 🔨 Construir a imagem PHP customizada
-- 🚀 Iniciar o container da aplicação (porta 8000)
-- 🗄️ Iniciar o container MySQL (porta 3306)
-- 📊 Criar automaticamente o banco de dados `crudphp`
-- 📋 Importar as tabelas `users` e `posts`
+- Construir a imagem PHP
+- Subir o container da aplicação na porta 8000
+- Subir o MySQL na porta 3306
+- Criar o banco `crudphp`
+- Importar `database.sql`
 
-### Passo 5: Verifique se está rodando
+### Passo 5: Verificar status
 
 ```bash
 docker compose ps
 ```
 
-Deve exibir:
-```
-NAME                        STATUS
-teste-tec-guimepa-app-1     Up
-teste-tec-guimepa-db-1      Up
-```
+### Passo 6: Acessar a aplicação
 
-### Passo 6: Acesse a aplicação
-
-Abra seu navegador em:
+Abra o navegador em:
 
 ```
 http://localhost:8000
 ```
 
-🎉 **Pronto! A aplicação está rodando!**
-
 ---
 
 ## 🗄️ Banco de dados
 
-### Estrutura
+Tabelas principais:
 
-O banco possui duas tabelas principais:
-
-#### Tabela `users`
+### users
 ```sql
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -129,7 +119,7 @@ CREATE TABLE users (
 );
 ```
 
-#### Tabela `posts`
+### posts
 ```sql
 CREATE TABLE posts (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -140,32 +130,12 @@ CREATE TABLE posts (
 );
 ```
 
-### Credenciais de acesso
-
-| Campo | Valor |
-|-------|-------|
-| **Host** | `db` (dentro do Docker) / `localhost` (fora do Docker) |
-| **Porta** | `3306` |
-| **Banco** | `crudphp` |
-| **Usuário** | `user` |
-| **Senha** | `password` |
-| **Root Password** | `rootpassword` |
-
-### Conectar via cliente MySQL (Workbench, DBeaver, etc)
-
-```
-Host: localhost
-Port: 3306
-Username: user
-Password: password
-Database: crudphp
-```
-
-### Acessar MySQL via terminal
-
-```bash
-docker compose exec db mysql -uuser -ppassword crudphp
-```
+Credenciais:
+- Host: db (de dentro dos containers) / localhost (de fora)
+- Porta: 3306
+- Banco: crudphp
+- Usuário: user
+- Senha: password
 
 ---
 
@@ -174,270 +144,90 @@ docker compose exec db mysql -uuser -ppassword crudphp
 ```
 teste-tec-guimepa/
 │
-├── app/                              # Lógica da aplicação
-│   ├── config/                       # Configurações
-│   │   └── database.php              # ⚠️ Conexão com MySQL
-│   ├── controllers/                  # Controladores (lógica de negócio)
-│   └── views/                        # Templates HTML/PHP
+├── app/
+│   ├── config/
+│   │   └── database.php
+│   ├── controllers/
+│   └── views/
 │
-├── public/                           # Pasta pública (DocumentRoot)
-│   ├── index.php                     # Ponto de entrada da aplicação
-│   ├── css/                          # Estilos
-│   └── js/                           # Scripts JavaScript
+├── public/
+│   └── index.php
 │
-├── Dockerfile                        # Configuração da imagem PHP
-├── docker-compose.yml                # Orquestração dos containers
-├── database.sql                      # Script de criação do banco
-└── README.md                         # Este arquivo
+├── Dockerfile
+├── docker-compose.yml
+├── database.sql
+└── README.md
 ```
 
 ---
 
 ## 🛠️ Comandos úteis
 
-### Gerenciar containers
-
+Status dos containers:
 ```bash
-# Ver status
 docker compose ps
+```
 
-# Ver logs em tempo real
+Logs gerais:
+```bash
 docker compose logs -f
+```
 
-# Ver logs apenas da aplicação
+Logs da aplicação:
+```bash
 docker compose logs -f app
+```
 
-# Ver logs apenas do banco
+Logs do banco:
+```bash
 docker compose logs -f db
-
-# Parar containers (mantém dados)
-docker compose stop
-
-# Iniciar containers parados
-docker compose start
-
-# Parar e remover containers (mantém volumes)
-docker compose down
-
-# Parar e remover TUDO (⚠️ apaga o banco!)
-docker compose down -v
 ```
 
-### Acessar containers
-
+Entrar no container PHP:
 ```bash
-# Entrar no container PHP
 docker compose exec app bash
-
-# Entrar no container MySQL
-docker compose exec db bash
-
-# Executar comando SQL direto
-docker compose exec db mysql -uuser -ppassword crudphp -e "SHOW TABLES;"
 ```
 
-### Resetar o projeto
-
-Se algo der errado, resete completamente:
-
+Entrar no container MySQL:
 ```bash
-docker compose down -v
-docker compose up -d --build
+docker compose exec db bash
 ```
 
----
-
-## ⚠️ Solução de problemas
-
-### ❌ Erro: "Access denied for user 'user'@'172.18.0.3'"
-
-**Causa:** Senha incorreta no `app/config/database.php`
-
-**Solução:** Edite o arquivo e certifique-se de que a senha é `password` (não `userpassword`):
-
-```php
-$pass = 'password';  // ✅ CORRETO
+Parar containers (mantém dados):
+```bash
+docker compose stop
 ```
 
----
-
-### ❌ Erro: "Porta 8000 já está em uso"
-
-**Solução:** Mude a porta no `docker-compose.yml`:
-
-```yaml
-services:
-  app:
-    ports:
-      - "8080:80"  # Mude para 8080 ou outra porta livre
+Subir novamente:
+```bash
+docker compose start
 ```
 
-Depois:
+Remover containers (mantém dados):
 ```bash
 docker compose down
-docker compose up -d --build
 ```
 
----
-
-### ❌ Erro: "Cannot connect to MySQL"
-
-**Solução 1:** Aguarde o MySQL inicializar (15-30 segundos após `docker compose up`)
-
-```bash
-docker compose logs db | grep "ready for connections"
-```
-
-**Solução 2:** Recrie os containers:
-
+Remover tudo (inclusive banco):
 ```bash
 docker compose down -v
-docker compose up -d --build
 ```
 
 ---
 
-### ❌ Erro: "The system cannot find the file specified" (pipe/dockerDesktopLinuxEngine)
+## Solução de problemas
 
-**Causa:** Docker Desktop não está rodando
+- Erro de acesso negado para o usuário `user`:
+  - Verificar se `app/config/database.php` está com `$pass = 'password';`
 
-**Solução:** 
-1. Abra o Docker Desktop
-2. Aguarde o ícone ficar estável
-3. Execute `docker ps` para confirmar
-4. Rode novamente `docker compose up -d --build`
+- Porta 8000 em uso:
+  - Editar `docker-compose.yml` e mudar `"8000:80"` para outra porta
 
----
-
-### ❌ Página branca no navegador
-
-**Verificações:**
-
-1. Logs do PHP:
-```bash
-docker compose logs app
-```
-
-2. Permissões dos arquivos:
-```bash
-docker compose exec app ls -la /var/www/html/
-```
-
-3. Teste a conexão com o banco:
-```bash
-docker compose exec db mysql -uuser -ppassword crudphp -e "SELECT 1;"
-```
+- Docker não conecta no engine:
+  - Abrir o Docker Desktop antes de rodar `docker compose up`
 
 ---
 
-## 🔧 Configurações técnicas
+## Autor
 
-### Dockerfile
-
-```dockerfile
-FROM php:8.0-apache
-RUN docker-php-ext-install pdo pdo_mysql
-COPY ./app /var/www/html/app
-COPY ./public /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
-RUN a2enmod rewrite
-WORKDIR /var/www/html/public
-EXPOSE 80
-```
-
-### docker-compose.yml
-
-- **Versão:** 3.8
-- **Services:** `app` (PHP 8.0 + Apache) e `db` (MySQL 8.0)
-- **Porta app:** 8000 → 80
-- **Porta MySQL:** 3306 → 3306
-- **Volume app:** Bind mount (hot reload)
-- **Volume db:** Named volume `dbdata` (persistente)
-- **Inicialização automática:** `database.sql` via `/docker-entrypoint-initdb.d/`
-
----
-
-## 📝 Funcionalidades
-
-- ✅ Listar todas as postagens
-- ✅ Criar nova postagem
-- ✅ Editar postagem existente
-- ✅ Deletar postagem
-- ✅ Gerenciar usuários
-- ✅ Banco de dados persistente
-- ✅ Hot reload (alterações no código refletem imediatamente)
-
----
-
-## 🧪 Testando o projeto
-
-### Verificar conexão com banco
-
-```bash
-docker compose exec db mysql -uuser -ppassword crudphp -e "SELECT 1;"
-```
-
-Deve retornar:
-```
-+---+
-| 1 |
-+---+
-| 1 |
-+---+
-```
-
-### Listar tabelas criadas
-
-```bash
-docker compose exec db mysql -uuser -ppassword crudphp -e "SHOW TABLES;"
-```
-
-Deve retornar:
-```
-+-------------------+
-| Tables_in_crudphp |
-+-------------------+
-| posts             |
-| users             |
-+-------------------+
-```
-
----
-
-## 👤 Autor
-
-**Gabriel Moon**  
-📧 GitHub: [@GabeeMoon](https://github.com/GabeeMoon)
-
----
-
-## 📄 Licença
-
-Projeto desenvolvido como teste técnico.
-
----
-
-## ✅ Checklist de execução
-
-- [ ] Docker Desktop instalado e rodando
-- [ ] Repositório clonado
-- [ ] Arquivo `app/config/database.php` com senha correta (`password`)
-- [ ] Executou `docker compose up -d --build` sem erros
-- [ ] `docker compose ps` mostra 2 containers "Up"
-- [ ] Acessou `http://localhost:8000` com sucesso
-- [ ] Tabelas `users` e `posts` foram criadas
-- [ ] CRUD funciona corretamente
-
-Se todos os itens estão ✅, o projeto está rodando perfeitamente! 🎉
-
----
-
-## 🆘 Suporte
-
-Se encontrar problemas:
-
-1. Verifique os logs: `docker compose logs -f`
-2. Confirme credenciais do banco em `app/config/database.php`
-3. Teste conexão: `docker compose exec db mysql -uuser -ppassword crudphp -e "SELECT 1;"`
-4. Recrie os containers: `docker compose down -v && docker compose up -d --build`
-```
+Gabriel Moon - https://github.com/GabeeMoon
