@@ -41,8 +41,6 @@ docker compose version
 git --version
 ```
 
----
-
 ## 🚀 Como executar o projeto
 
 ### Passo 1: Clone o repositório
